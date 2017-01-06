@@ -1,9 +1,10 @@
 package com.btesila.child.actors
 
 import akka.actor.{Actor, ActorLogging, Props}
-import com.btesila.hakky.presentation.basics.Barista.{CoffeeRequest, JuiceRequest}
 
 class Barista extends Actor with ActorLogging {
+  import Barista._
+
   val child = context.actorOf(OrderRegister.props(), "hakky-order-register")
 
   override def receive: Receive = {
