@@ -1,14 +1,24 @@
 package com.btesila.trainining.hakky.cupcake
 
-import akka.actor.ActorSystem
+import akka.actor.{ActorRef, ActorSystem}
 
 import scala.annotation.tailrec
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import scala.io.StdIn
 
+object HakkyCupcakeApp extends App {
+  val as = ActorSystem("hakky-cupcake")
+  val app = HakkyCupcakeApp(as)
+  app.run()
+
+  def apply(system: ActorSystem): HakkyCupcakeApp = new HakkyCupcakeApp(system)
+}
+
 class HakkyCupcakeApp(system: ActorSystem) extends Console {
   private val logger = system.log
+
+  private val hakkyCupcakeStore = createHakkyCupcake
 
   def run(): Unit = {
     logger.info("Opened cupcake shop...")
@@ -20,8 +30,9 @@ class HakkyCupcakeApp(system: ActorSystem) extends Console {
   @tailrec
   private def listenForCommands(): Unit =
     Command(StdIn.readLine())  match {
-      case Command.Customer(cupcake, count) =>
+      case c@Command.Customer(cupcake, count) =>
         logger.info(s"Got a new order: $count $cupcake's")
+        hakkyCupcakeStore ! c
         listenForCommands()
       case Command.Status =>
         logger.info(s"A customer wants to know the status of its order")
@@ -33,12 +44,9 @@ class HakkyCupcakeApp(system: ActorSystem) extends Console {
         logger.warning("Unknown command {}", command)
         listenForCommands()
     }
+
+  private def createHakkyCupcake: ActorRef =
+//    system.deadLetters
+    system.actorOf(HakkyCupcake.props(), "hakky-cupcake-actor")
 }
 
-object HakkyCupcakeApp extends App {
-  val as = ActorSystem("hakky-cupcake")
-  val app = HakkyCupcakeApp(as)
-  app.run()
-
-  def apply(system: ActorSystem): HakkyCupcakeApp = new HakkyCupcakeApp(system)
-}

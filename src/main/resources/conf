@@ -1,0 +1,82 @@
+akka {
+  loglevel = "DEBUG"
+
+//  actor {
+//     debug {
+//       # enable function of LoggingReceive, which is to log any received message at
+//       # DEBUG level
+//       receive = on
+//       # enable DEBUG logging of actor lifecycle changes
+//       lifecycle = on
+//       # enable DEBUG logging of unhandled messages
+//       unhandled = on
+//     }
+//  }
+}
+
+// fork-join-executor allows you to have a static thread pool configuration where number of threads will be between
+// parallelism-min and parallelism-max bounds
+task-dispatcher {
+  type = "Dispatcher"
+  executor = "fork-join-executor"
+  fork-join-executor {
+    parallelism-min = 100
+    parallelism-max = 200
+  }
+}
+
+// thread-pool-executor for a  thread pool with dynamic nature
+super-task-dispatcher {
+  type = "Dispatcher"
+  executor = "thread-pool-executor"
+
+  thread-pool-executor {
+    fixed-pool-size = off
+
+    core-pool-size-min = 8
+
+    core-pool-size-factor = 3.0
+
+    core-pool-size-max = 64
+
+    max-pool-size-min = 8
+
+    max-pool-size-factor = 3.0
+
+    max-pool-size-max = 64
+
+    task-queue-size = -1
+  }
+}
+
+hyper-task-dispatcher {
+  type = "Dispatcher"
+  executor = "thread-pool-executor"
+
+  thread-pool-executor {
+    core-pool-size-min = 8
+
+    core-pool-size-factor = 3.0
+
+    core-pool-size-max = 64
+
+    max-pool-size-factor = 3.0
+
+    max-pool-size-min = 128
+
+    max-pool-size-max = 200
+
+    task-queue-size = 10
+  }
+}
+
+bounded-mailbox {
+  mailbox-type = "akka.dispatch.BoundedMailbox"
+  mailbox-capacity = 1
+  mailbox-push-timeout-time = 30s
+}
+
+
+akka {
+
+}

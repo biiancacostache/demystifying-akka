@@ -25,7 +25,7 @@ trait Console {
       "M|m|N|n|O|o".r ^^ Cupcake.apply
 
     def customer: Parser[Command.Customer] =
-      ("G|g".r ~> opt(cupcake) ~ opt(int)) ^^ {
+      ("C|c".r ~> opt(cupcake) ~ opt(int)) ^^ {
         case (cupcake ~ count) =>
           Command.Customer(
             cupcake getOrElse Cupcake.OreoCupcake,
